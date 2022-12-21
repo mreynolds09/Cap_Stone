@@ -73,10 +73,10 @@ def login():
     password = str(input("input password: ")) 
     
 
-    password = password.encode('utf-8')
+    # password = password.encode('utf-8')
     
 
-    hashed = bcrypt.hashpw(password, bcrypt.gensalt(10)) 
+    # hashed = bcrypt.hashpw(password, bcrypt.gensalt(10)) 
     
 
 
@@ -86,17 +86,17 @@ def login():
     check = check.encode('utf-8') 
     
     
-    db_cursor.execute("SELECT password FROM Users WHERE email =?", (email,)).fetchone()
+    # db_cursor.execute ('INSERT INTO Users (user_id,first_name,last_name,phone,email,password,active,date_created,hire_date,user_type) VALUES (?,?,?,?,?,?,?,?,?,?) (user_id,first_name,last_name,phone,email,password,active,date_created,hire_date,user_type)')
 
     
     # db_cursor.execute("INSERT INTO Users WHERE password =?",(password)).fetchone()
 
     
     connection.commit()
-    if bcrypt.checkpw(check, hashed):
-        print("login success")
-    else:
-        print("incorrect password")
+    # if bcrypt.checkpw(check, hashed):
+    #     print("User Created Successfully")
+    # else:
+    #     print("incorrect password")
 
    
 
@@ -113,27 +113,38 @@ def add_user():
 
     print ("Adding User")
     
-    first_name = input('Please enter first name: ')
+    first_name = input('Enter first name: ')
 
-    last = input('Please enter last name: ')
+    last = input('Enter last name: ')
 
-    phone = input ('Please enter phone number: ')
+    phone = input ('Enter phone number: ')
 
-    email = input ('Please enter email: ')
+    email = input ('Enter email: ')
     
-    password = input('Please enter password: ')
+    password = input('Enter password: ')
     
-    active = input ('Please Enter 1 -> (Active) 2 -> (Not Active: ')
+    active = input ('Enter 1 -> (Active) 2 -> (Not Active)g: ')
     
-    date_created = input('Please enter date created: ')
+    date_created = input('Enter date created: ')
 
-    date_hired = input('Please enter date hired: ')
+    date_hired = input('Enter date hired: ')
 
-    user_type = input('Please enter User or Manager: ')
+    user_type = input('Enter User or Manager: ')
     
 
+    password = password.encode('utf-8')
+    hashed = bcrypt.hashpw(password, bcrypt.gensalt(10)) 
 
+    
+    check = str(input("check password: ")) 
+    
 
+    check = check.encode('utf-8') 
+    
+    if bcrypt.checkpw(check, hashed):
+        print("User Created Successfully")
+    else:
+        print("incorrect password")
 
 
     USERS = [first_name,last,phone,email,password,active,date_created,date_hired,user_type]
@@ -183,15 +194,30 @@ def view_all_users(where=None):
             f"{row[0]:10}{row[1]:12}{row[2]:12}{row[3]:14}{row[4]:34}{row[5]:15}{row[6]:15}{row[7]:17}{row[8]:17}{row[9]}")
 
 
+def edit_user():
+    user_id = input ('Select User By user_id you would like to edit: ')
+    
+    fname = input ('Please provide a new first name:  ')
+    lname = input ('Please provide a new last name:  ')
+    phone = input ('Please provide a new phone number:  ')
+    email = input ('Please provide a new email:  ')
+    password = input ('Please provide a new password:  ')
+    active = input ('Please update active or not active:  ')
+    user_type = input ('Please update user type:  ')
+    edit_query = "UPDATE Users SET first_name = ?, last_name = ?, phone = ?, email = ?, password = ?, active = ?,  user_type = ? WHERE user_id =? ;"
+    db_cursor.execute(edit_query, (fname,lname, phone, email, password, active, user_type, user_id)).fetchone()
 
+    connection.commit()
+    
+   
 
 def add_competency():
 
-    comp_name = input('Please enter competency Name: ')
+    comp_name = input('Enter competency Name: ')
 
-    date_created = input('Please enter date created: ')
+    date_created = input('Enter date created: ')
 
-    competency_scale = input('Please enter competency value 0-4: ')
+    competency_scale = input('Enter competency value 0-4: ')
 
     
 
@@ -238,15 +264,20 @@ def view_all_competencies(where=None):
 
 def edit_Competency():
 
-    db_cursor.execute('UPDATE Competencies SET comp_name = ? WHERE Competency_id = ?',(competency_score, competency_id))
+    competency_id = input('Which Competency? (competency_id):')
 
+    competency_score = input('Please provide a score 0-4 for this Competency:')
+    
+    
+    db_cursor.execute('UPDATE Competencies SET competency_scale = ? WHERE comp_name = ?',(competency_score,competency_id))
 
+    connection.commit()
 
 def add_Assessment():
 
-    assessment_name = input('please enter Assessment Name: ')
+    assessment_name = input('Enter Assessment Name: ')
 
-    date_created = input('Please enter date created: ')
+    date_created = input('Enter date created: ')
 
     
 
@@ -290,7 +321,11 @@ def view_all_assessments(where=None):
 
 def edit_Assessment():
 
-    db_cursor.execute('UPDATE Assessments SET assessment_name = ? WHERE assessment_id =?',(assessment_id, assess_value)) # I need help I keep getting errors on all of my editing ones.
+    assessment_id = input('Which Assessment? (assessment_id):')
+
+    assess_value = input('Please provide a new name for this Assessment:')
+    
+    db_cursor.execute('UPDATE Assessments SET assessment_name = ? WHERE assessment_id =?',(assess_value, assessment_id)) # I need help I keep getting errors on all of my editing ones.
     
 
 
@@ -299,19 +334,19 @@ def add_assessment_result():
 
     
 
-    user = input('please enter user: ')
+    user = input('Add user: ')
 
     assessment_result_name = input(' Please name your assessment result: ')
 
-    assessment = input('please enter assessment: ')
+    assessment = input('Add assessment: ')
 
-    assessment_result_id ('Please Enter The Result ID')
+    assessment_result_id = input ('Add The Result ID')
     
-    score = input('Please enter the score: ')
+    score = input('Add the score: ')
 
-    date_taken = input('Please enter the date taken: ')
+    date_taken = input('Add the date taken: ')
 
-    manager = input('please enter manager: ')
+    manager = input('Add manager: ')
 
 
 
@@ -327,17 +362,17 @@ def add_assessment_result():
 
 def view_all_assessments_results(where=None):    
     if where:
-        rows = db_cursor.execute("SELECT * FROM Assessments_Results WHERE assessment_result_id LIKE ?", (where)).fetchall()
+        rows = db_cursor.execute("SELECT * FROM Assessment_Results WHERE assessment_result_id LIKE ?", (where)).fetchall()
         
     else:   
-        rows = db_cursor.execute("SELECT * FROM Assessments",)
+        rows = db_cursor.execute("SELECT * FROM Assessment_Results",)
     
     headers = [
         
-        "user_id"
-        "assessment_result_name"
+        "user_id",
+        "assessment_result_name",
         "assessment_id",
-        "assessment_result_id"
+        "assessment_result_id",
         "score",
         "date_taken",
         "manager"
@@ -355,11 +390,14 @@ def view_all_assessments_results(where=None):
     for row in rows:
         row = [str (i) for i in row]
         print(
-            f"{row[0]:17}{row[1]:17}{row[2]:17}{row[3]:17}{row[4]:17}{row[5]:17}{row[6]:17}")
+            f"{row[0]:17}{row[1]:17}{row[2]:17}{row[3]:17}{row[4]:17}{row[5]:17}{row[6]}")
 
 def edit_Assessment_Result():
+    assessment_result_id = input('Which Assessment Results? (assessment_result_id):')
 
-    db_cursor.execute('UPDATE Assessment_Results SET assessment_results_name = ? WHERE assessment_result_id =?',(assess_value,assessment_result_id))
+    asr_value = input('Please provide a new value for this Assessment Result:')
+    
+    db_cursor.execute('UPDATE Assessment_Results SET assessment_result_name = ? WHERE assessment_result_id =?',(asr_value,assessment_result_id))
 
 
 
@@ -432,25 +470,32 @@ while True:
     
             if manager_choice == '1':
                 view_all_users()    
-                user_id = input ('What user would you like to input: ')
+                # user_edit_input = input('''
+                # What would you like to update:
+                # 1. First name
+                # 2. Last name
+                # 3. Phone
+                # 4. Email
+                # 5. Password
                 
-                value = input ('Please provide a new value for this user: ')
-                edit_query = "UPDATE Users SET first_name = ? WHERE user_id = ?;"
-                result = db_cursor.execute(value, (user_id,)).fetchone()
+                
+                
+                
+                # ''')
+                edit_user()
 
-                connection.commit()
-               
+              
     
             elif manager_choice == '2':
                 add_competency()
             
             elif manager_choice == '3':
                 view_all_competencies()
-                competency_id = input('Which Competency?:')
+                
 
-                competency_score = input('Please provide a new value for this Competency:')
-
-                edit_Competency(competency_score,competency_id)
+                edit_Competency()
+                break
+               
 
         
 
@@ -462,25 +507,22 @@ while True:
                 
             elif manager_choice == '5':
                 view_all_assessments()
-                assessment_id = input('Which Assessment?:')
-
-                assess_value = input('Please provide a new value for this Assessment:')
-
-                edit_Assessment(assessment_id,assess_value)
                 
+
+                edit_Assessment()
+                break
+            
             elif manager_choice == '6':
                 view_all_users()
                 add_assessment_result()
                 
             elif manager_choice == '7':
-                view_all_assessments_results
-                assessment_result_id = input('Which Assessment Results?:')
+                view_all_assessments_results()
+                
 
-                asr_value = input('Please provide a new value for this Assessment Result:')
+                edit_Assessment_Result()
 
-                edit_Assessment_Result(asr_value,assessment_result_id)
-
-        
+                break
             
             elif manager_choice == '8':
                 export_to_csv()
